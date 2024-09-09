@@ -1,0 +1,42 @@
+﻿@page "/"
+
+<PageTitle>Задачи</PageTitle>
+
+<h1>Мои задачи</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Заголовок</th>
+            <th>Описание</th>
+            <th>Создано</th>
+            <th>Завершено</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var task in tasks)
+        {
+            <tr>
+                <td>@task.Id</td>
+                <td>@task.Title</td>
+                <td>@task.Description</td>
+                <td>@task.CreatedDate</td>
+                <td>@task.FinishedDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    IEnumerable<TaskItem> tasks = new List<TaskItem>
+    {
+        new TaskItem{Id = 1, Title="Заголовок 1", Description="Описание 1", CreatedDate=DateTime.Now, FinishedDate=DateTime.Now },
+        new TaskItem{Id = 2, Title="Заголовок 2", Description="Описание 2", CreatedDate=DateTime.Now, FinishedDate=DateTime.Now },
+        new TaskItem{Id = 3, Title="Заголовок 3", Description="Описание 3", CreatedDate=DateTime.Now, FinishedDate=DateTime.Now }
+
+    };
+}
