@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using TodoSeverApp.Components;
 using TodoSeverApp.Components.Account;
 using TodoSeverApp.Data;
+using TodoSeverApp.Data.interfaces;
+using TodoSeverApp.Data.Migrations.Services;
 
 namespace TodoSeverApp
 {
@@ -40,6 +42,7 @@ namespace TodoSeverApp
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+            builder.Services.AddScoped<IDataService, MemoryDataService>();
 
             var app = builder.Build();
 
