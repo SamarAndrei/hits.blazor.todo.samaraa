@@ -10,10 +10,26 @@ namespace TodoSeverApp.Data.Migrations.Services
             new() {Id = 2, Title="Заголовок 2", Description="Описание 2", CreatedDate=DateTime.Now, FinishedDate=DateTime.Now },
             new() {Id = 3, Title="Заголовок 3", Description="Описание 3", CreatedDate=DateTime.Now, FinishedDate=DateTime.Now }
         };
-        public async Task <IEnumerable<TaskItem>> GetTasksAsync()
+
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task <IEnumerable<TaskItem>> GetAllAsync()
         {
             await Task.Delay(1000);
             return await Task.FromResult(_tasks);
+        }
+
+        public Task<TaskItem> GetTaskAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveAsync(TaskItem item)
+        {
+            throw new NotImplementedException();
         }
     }
 }
