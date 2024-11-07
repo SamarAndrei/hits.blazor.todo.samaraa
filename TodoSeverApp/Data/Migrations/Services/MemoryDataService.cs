@@ -1,4 +1,5 @@
-﻿using TodoSeverApp.Data.interfaces;
+﻿using TodoSeverApp.Components.Pages;
+using TodoSeverApp.Data.interfaces;
 
 namespace TodoSeverApp.Data.Migrations.Services
 {
@@ -30,6 +31,37 @@ namespace TodoSeverApp.Data.Migrations.Services
         public Task SaveAsync(TaskItem item)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task AddSubtaskAsync(int taskId, Subtask subtask)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
+            if (task != null)
+            {
+                subtask.Id = task.Subtasks.Count > 0 ? task.Subtasks.Max(s => s.Id) + 1 : 1;
+                task.Subtasks.Add(subtask);
+            }
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteSubtaskAsync(int taskId, int subtaskId)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
+            if (task != null)
+            {
+                var subtask = task.Subtasks.FirstOrDefault(s => s.Id == subtaskId);
+                if (subtask != null)
+                {
+                    task.Subtasks.Remove(subtask);
+                }
+            }
+            await Task.CompletedTask;
+        }
+
+        public async Task<IEnumerable<Subtask>> GetSubtasksAsync(int taskId)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == taskId);
+            return task != null ? task.Subtasks : new List<Subtask>();
         }
     }
 }

@@ -35,5 +35,36 @@ namespace TodoSeverApp.Data.Migrations.Services
             context.TaskItems.Remove(taskItem);
             await context.SaveChangesAsync();
         }
+
+        public async Task AddSubtaskAsync(int taskId, Subtask subtask)
+        {
+            var task = await context.TaskItems.Include(t => t.Subtasks).FirstOrDefaultAsync(t => t.Id == taskId);
+            if (task != null)
+            {
+                task.Subtasks.Add(subtask);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteSubtaskAsync(int taskId, int subtaskId)
+        {
+            var task = await context.TaskItems.Include(t => t.Subtasks).FirstOrDefaultAsync(t => t.Id == taskId);
+            if (task != null)
+            {
+                var subtask = task.Subtasks.FirstOrDefault(s => s.Id == subtaskId);
+                if (subtask != null)
+                {
+                    task.Subtasks.Remove(subtask);
+                    await context.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<Subtask>> GetSubtasksAsync(int taskId)
+        {
+            var task = await context.TaskItems.Include(t => t.Subtasks).FirstOrDefaultAsync(t => t.Id == taskId);
+            return task?.Subtasks ?? new List<Subtask>();
+        }
+
     }
 }

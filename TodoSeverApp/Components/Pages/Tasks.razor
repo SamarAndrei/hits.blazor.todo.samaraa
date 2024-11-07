@@ -3,22 +3,20 @@
 @inject NavigationManager navigate
 
 @rendermode InteractiveServer
-
 @attribute [Authorize]
-
 
 <PageTitle>Задачи</PageTitle>
 
 <h1>Мои задачи</h1>
 
-
 <div class="container">
-    @if(tasks== null)
+    @if (tasks == null)
     {
         <tr>
             <td colspan="5">Loading...</td>
         </tr>
-    } else
+    }
+    else
     {
         <div class="btn-group m-2">
             <button class="btn btn-primary" @onclick="AddTask">Новая задача</button>
@@ -33,17 +31,29 @@
                     <div class="card-body">
                         <p>@task.CreatedDate</p>
                         <p>@task.Description</p>
+
+                        <h5>Подзадачи</h5>
+                        <ul>
+                            @foreach (var subtask in task.Subtasks)
+                            {
+                                <li>
+                                    <input type="checkbox" checked="@subtask.IsCompleted" @onclick="async () => await ToggleSubtaskCompletion(task.Id, subtask)" /> @subtask.Title
+                                    <button class="btn btn-danger btn-sm m-2" @onclick="async () => await DeleteSubtask(task.Id, subtask.Id)">Удалить</button>
+                                </li>
+                            }
+                        </ul>
+
+                        <button class="btn btn-secondary" @onclick="() => AddSubtask(task.Id)">Добавить подзадачу</button>
                     </div>
                     <div class="card-footer">
                         <a class="btn btn-primary" href="tasks/@task.Id">Изменить</a>
-                        <button class="btn btn-primary" @onclick="async () => await DeleteTask(task.Id)"> Удалить</button>
+                        <button class="btn btn-danger m" @onclick="async () => await DeleteTask(task.Id)">Удалить</button>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
-
 
 @code {
     IEnumerable<TaskItem>? tasks;
@@ -54,13 +64,34 @@
         tasks = await data.GetAllAsync();
     }
 
-    void AddTask() {
+    void AddTask()
+    {
         navigate.NavigateTo("tasks/add");
     }
 
     async Task DeleteTask(int id)
     {
         await data.DeleteAsync(id);
+        tasks = await data.GetAllAsync();
+    }
+
+    async Task AddSubtask(int taskId)
+    {
+        var newSubtask = new Subtask { Title = "Новая подзадача" };
+        await data.AddSubtaskAsync(taskId, newSubtask);
+        tasks = await data.GetAllAsync();
+    }
+
+    async Task ToggleSubtaskCompletion(int taskId, Subtask subtask)
+    {
+        subtask.IsCompleted = !subtask.IsCompleted;
+        await data.SaveAsync(tasks.FirstOrDefault(t => t.Id == taskId));
+        tasks = await data.GetAllAsync();
+    }
+
+    async Task DeleteSubtask(int taskId, int subtaskId)
+    {
+        await data.DeleteSubtaskAsync(taskId, subtaskId);
         tasks = await data.GetAllAsync();
     }
 }
